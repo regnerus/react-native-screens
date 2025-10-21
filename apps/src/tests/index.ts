@@ -152,6 +152,7 @@ export { default as Test3173 } from './Test3173';
 export { default as Test3212 } from './Test3212';
 export { default as Test3239 } from './Test3239';
 export { default as Test3265 } from './Test3265';
+export { default as Test3271 } from './Test3271';
 export { default as TestScreenAnimation } from './TestScreenAnimation';
 export { default as TestScreenAnimationV5 } from './TestScreenAnimationV5';
 export { default as TestHeader } from './TestHeader';
