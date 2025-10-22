@@ -144,17 +144,6 @@ struct ContentWrapperBox {
 #endif // RCT_NEW_ARCH_ENABLED
 }
 
-+ (RNSViewInteractionManager *)viewInteractionManagerInstance
-{
-  static RNSViewInteractionManager *manager = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manager = [[RNSViewInteractionManager alloc] init];
-  });
-
-  return manager;
-}
-
 - (BOOL)getFullScreenSwipeShadowEnabled
 {
   if (@available(iOS 26, *)) {
@@ -807,7 +796,7 @@ RNS_IGNORE_SUPER_CALL_END
 
     // Use RNSViewInteractionManager util to find a suitable subtree to disable interations on,
     // starting from reactSuperview, because on Paper, self is not attached yet.
-    [RNSScreenView.viewInteractionManagerInstance disableInteractionsForSubtreeWith:self.reactSuperview];
+    self.reactSuperview.userInteractionEnabled = false;
   }
 }
 
@@ -815,7 +804,7 @@ RNS_IGNORE_SUPER_CALL_END
 {
   if (@available(iOS 26, *)) {
     // Disable interactions to disallow multiple modals dismissed at once; see willMoveToWindow
-    [RNSScreenView.viewInteractionManagerInstance disableInteractionsForSubtreeWith:self.reactSuperview];
+    self.reactSuperview.userInteractionEnabled = false;
   }
 
 #if !RCT_NEW_ARCH_ENABLED
@@ -846,7 +835,7 @@ RNS_IGNORE_SUPER_CALL_END
 {
   if (@available(iOS 26, *)) {
     // Reenable interactions; see presentationControllerWillDismiss
-    [RNSScreenView.viewInteractionManagerInstance enableInteractionsForLastSubtree];
+    self.reactSuperview.userInteractionEnabled = true;
   }
 
   // NOTE(kkafar): We should consider depracating the use of gesture cancel here & align
@@ -862,7 +851,7 @@ RNS_IGNORE_SUPER_CALL_END
   if (@available(iOS 26, *)) {
     // Reenable interactions; see presentationControllerWillDismiss
     // Dismissed screen doesn't hold a reference to window, but presentingViewController.view does
-    [RNSScreenView.viewInteractionManagerInstance enableInteractionsForLastSubtree];
+    self.reactSuperview.userInteractionEnabled = true;
   }
 
   if ([_reactSuperview respondsToSelector:@selector(presentationControllerDidDismiss:)]) {
@@ -1666,7 +1655,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 {
   if (@available(iOS 26, *)) {
     // Reenable interactions, see willMoveToWindow
-    [RNSScreenView.viewInteractionManagerInstance enableInteractionsForLastSubtree];
+    self.view.reactSuperview.userInteractionEnabled = true;
   }
   [super viewDidAppear:animated];
   if (!_isSwiping || _shouldNotify) {
@@ -1710,7 +1699,7 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 #endif
   if (@available(iOS 26, *)) {
     // Reenable interactions, see willMoveToWindow
-    [RNSScreenView.viewInteractionManagerInstance enableInteractionsForLastSubtree];
+    self.view.reactSuperview.userInteractionEnabled = true;
   }
 }
 
